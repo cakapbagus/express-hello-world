@@ -1,4 +1,5 @@
 const express = require("express");
+const readline = require("readline");
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -8,6 +9,32 @@ const server = app.listen(port, () => console.log(`Example app listening on port
 
 server.keepAliveTimeout = 120 * 1000;
 server.headersTimeout = 120 * 1000;
+
+// Terminal input feature: prompt the user for their name via stdin and greet them.
+// Only starts when stdin is an interactive terminal (TTY) so it does not block
+// in non-interactive environments such as Render.
+function askUserName() {
+  if (!process.stdin.isTTY) {
+    return;
+  }
+
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  rl.question("What's your name? ", (name) => {
+    const trimmed = name.trim();
+    if (trimmed) {
+      console.log(`Hello, ${trimmed}! Thanks for stopping by.`);
+    } else {
+      console.log("Hello there! Thanks for stopping by.");
+    }
+    rl.close();
+  });
+}
+
+askUserName();
 
 const html = `
 <!DOCTYPE html>
